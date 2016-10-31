@@ -1,0 +1,16 @@
+{
+  "name": "banner-ad",
+  "version": "1.0.0",
+  "description": "example banner-ad with universal-passthrough",
+  "main": "index.server",
+  "typings": "index.server",
+  "browser": "index.browser",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    "PatrickJS <patrick@angularclass.com>",
+    "Shawn Stedman <sstedman@pxwise.com>"
+  ],
+  "license": "MIT"
+}
