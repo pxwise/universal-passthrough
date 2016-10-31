@@ -4,11 +4,11 @@ A utility for [angular universal](https://github.com/angular/universal) to pass 
 
 ###Use cases:
 
-**ads** - if an ad bootstraps into server rendered DOM before bootstrap, the ad markup can be passed intot the same position as the client app.
+**ads** - if an ad bootstraps into server rendered DOM before bootstrap, the ad markup can be passed into the same position as the client app.
 
 **edge compute transformed markup** - DOM that has been processed after server render can be preserved in its transformed state and passed into client app.
 
-**static content** - selectively reduce CPU and RAM use in browser for components that have already been processed server side by passing the server rendered DOM through as is.
+**static content** - selectively reduce CPU and RAM in browser for components that have already been processed server side by passing the server rendered DOM through as-is.
 
 ###How to use:
 
@@ -16,7 +16,7 @@ Create a server version of your component and a browser version of your componen
 
 The server version of your component will be the version that carries over into the client app.
 
-The client version will be displaced and should have the same width, height and background-color as the server component to prevent FOUC when transitioning DOM state.
+Make sure your client version of the component has the same width, height and background-color as the server component to prevent FOUC when transitioning DOM state.
 
 The example uses the [package.json browser spec](https://github.com/defunctzombie/package-browser-field-spec) pattern for splitting server and browser modules, components and services.
 
