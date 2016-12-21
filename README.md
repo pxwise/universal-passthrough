@@ -28,11 +28,11 @@ import { passthrough } from 'universal-passthrough';
 import { MainModule } from './app.browser.module';
 
 const platformRef = platformUniversalDynamic();
+let serverEls = passthrough().getServerElements();
+
 platformRef.bootstrapModule(MainModule)
   .then((mainModuleRef) => {
-    passthrough(mainModuleRef);
+    passthrough().complete(mainModuleRef, serverEls);
     return mainModuleRef;
 });
 ```
-
-@todo still need to dynamically pass in server and browser ids into registry.
