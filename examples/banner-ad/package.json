@@ -12,5 +12,8 @@
     "PatrickJS <patrick@angularclass.com>",
     "Shawn Stedman <sstedman@pxwise.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "universal-passthrough": "github:pxwise/universal-passthrough"
+  }
 }

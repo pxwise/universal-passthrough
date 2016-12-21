@@ -1,56 +1,57 @@
 /**
- * UniversalPassthrough
+ * UniversalPassthrough browser version - swap server element w/ browser element
  */
+
+// Globals must be outside of factory scope or values are destroyed by router.
+let browserElements = {};
+let serverElements = {};
 
 /**
  * PassthroughRegistry class definition.
  */
 export class PassthroughRegistry {
-  private browserElements: any = {};
-  private serverElements: any = {};
+  public serverElements: any = {};
 
-  public isRegistered(id: string): boolean { return true; }
-  public registerElement(id: string, el: HTMLElement): HTMLElement|any { }
+  public isRegistered(id: string): boolean { return true }
+  public replaceElement(id: string, el: HTMLElement): HTMLElement|any { }
   public complete(): void { }
   public detach(id: string, el: HTMLElement): void { }
   public reattach(id: string, el: HTMLElement): void { }
-  private replaceBrowserElements(): void { }
+  private isElement(): boolean { return false }
 }
 
 /**
  * PassthroughRegistryFactory function.
  */
 export function PassthroughRegistryFactory() {
-  // @todo dyamically assemble passthrough element ids
-  // @todo getElementById returning null, route related?
-  let browserElements = {
-    'top-banner-ad-browser': document.getElementById('top-banner-ad-browser')
-  };
-  // getElementById works on next tick, not sure why, route related?
-  setTimeout(() => {
-    browserElements['top-banner-ad-browser'] = document.getElementById('top-banner-ad-browser')
-  }, 0);
-  let serverElements = {};
-
-  let replaceBrowserElements = (): void => {
-    Object.keys(serverElements).forEach(id => {
-      let browserEl = browserElements[id];
-      let serverEl = serverElements[id];
-      browserEl.parentNode.replaceChild(serverEl, browserEl);
-    });
-  };
+  let isElement = (el: any): boolean => {
+    return (el != null)
+      && (typeof el === 'object')
+      && (el.nodeType === Node.ELEMENT_NODE)
+      && (typeof el.style === 'object')
+      && (typeof el.ownerDocument === 'object');
+  }
 
   return {
-    isRegistered: (id: string): boolean => Boolean(serverElements[id]),
-    // original does not grab correct el
-    // registerElement: (id: any, el: any): any => { console.log('registerElements'); return serverElements[id] = el},
-    registerElement: (id: string, el: HTMLElement): HTMLElement|any => serverElements[id] = document.getElementById('top-banner-ad-server'),
-    complete(): void {
-      // setTimeout to hop off this tick, prevent FOUC
-      // @todo see if fixed upstream when this fix lands https://github.com/angular/angular/issues/12162
-      window.setTimeout(() => {
-        window.requestAnimationFrame(replaceBrowserElements);
-      }, 0);
+    isRegistered: (id: string): boolean => Boolean(browserElements[id]),
+    // register browser element and replace with corresponding server element if
+    // found.
+    replaceElement: (browserId: string, el: HTMLElement): void => {
+      if (Object.keys(serverElements).indexOf(browserId) > -1) {
+        if (isElement(el) && isElement(el.parentNode) && isElement(serverElements[browserId])) {
+          window.requestAnimationFrame(() => {
+            el.parentNode.replaceChild(serverElements[browserId], el);
+            delete serverElements[browserId];
+          });
+        }
+      }
+    },
+    // register server elements, fetched as sync in client.ts before bootstrap.
+    complete(serverEls: any): void {
+      serverElements = serverEls;
+    },
+    replaceElements: (): void => {
+
     },
     detach: (id: string, el: HTMLElement): void => {
       let serverEl = serverElements[id];
@@ -64,9 +65,28 @@ export function PassthroughRegistryFactory() {
 }
 
 /**
- * passthrough facade function to execute in client.ts.
+ * passthrough functions to execute in client.ts.
  */
-export function passthrough(moduleRef: any): void {
-  const passthroughRegistry = moduleRef.injector.get(PassthroughRegistry)
-  passthroughRegistry.complete();
+export function passthrough() {
+  return {
+    getServerElements: (): any => {
+      let serverElements = {};
+      let serverElementsArr = [].slice.call(document.querySelectorAll('[universalpassthrough]'));
+
+      serverElementsArr.forEach((el) => {
+        // has universalpassthrough attr and an id w/ suffix '-server'
+        if (el.id.match(/-server?/i)) {
+          let browserKey = el.id.replace('-server', '-browser');
+          serverElements[browserKey] = el;
+        }
+      });
+
+      return serverElements;
+    },
+    complete: (moduleRef: any, serverEls: any): void => {
+      const passthroughRegistry = moduleRef.injector.get(PassthroughRegistry);
+      passthroughRegistry.complete(serverEls);
+    }
+  }
 }
+

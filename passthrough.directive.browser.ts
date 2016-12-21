@@ -1,9 +1,9 @@
 import { Directive, Attribute, ElementRef, ChangeDetectorRef } from '@angular/core';
 
-import { PassthroughRegistry } from './';
+import { PassthroughRegistry } from './passthrough-registry.browser';
 
 @Directive({
-  selector: '[universalPassthrough],[universal-passthrough]'
+  selector: '[universalPassthrough]'
 })
 export class UniversalPassthrough {
   constructor(
@@ -15,7 +15,7 @@ export class UniversalPassthrough {
     if (this.passthroughRegistry.isRegistered(id)) {
       this.passthroughRegistry.reattach(id, this.elementRef.nativeElement);
     } else {
-      this.passthroughRegistry.registerElement(id, this.elementRef.nativeElement);
+      this.passthroughRegistry.replaceElement(id, this.elementRef.nativeElement);
     }
     cdRef.detach();
   }

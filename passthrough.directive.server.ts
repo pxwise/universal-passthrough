@@ -1,5 +1,6 @@
 import { Directive } from '@angular/core';
+
 @Directive({
-  selector: '[universalPassthrough],[universal-passthrough]'
+  selector: '[universalPassthrough]'
 })
 export class UniversalPassthrough {}

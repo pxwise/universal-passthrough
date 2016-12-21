@@ -1,6 +1,6 @@
 {
   "name": "universal-passthrough",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "seamless server -> browser DOM replacement for @angular universal",
   "main": "index.server",
   "typings": "index.server",
@@ -12,5 +12,17 @@
     "PatrickJS <patrick@angularclass.com>",
     "Shawn Stedman <sstedman@pxwise.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "~2.1.2",
+    "@angular/compiler": "~2.1.2",
+    "@angular/core": "~2.1.2",
+    "@angular/forms": "~2.1.2",
+    "@angular/http": "~2.1.2",
+    "@angular/platform-browser": "~2.1.2",
+    "@angular/platform-browser-dynamic": "~2.1.2",
+    "@angular/platform-server": "~2.1.2",
+    "rxjs": "5.0.0-beta.12",
+    "zone.js": "~0.6.26"
+  }
 }
