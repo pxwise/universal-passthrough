@@ -1,34 +1,42 @@
 {
   "name": "universal-passthrough",
-  "version": "1.0.1",
-  "description": "seamless server -> browser DOM replacement for @angular universal",
-  "main": "index.server",
-  "typings": "index.server",
-  "browser": "index.browser",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pxwise/universal-passthrough.git"
   },
+  "version": "2.0.0",
+  "description": "seamless server -> browser DOM replacement for @angular universal",
+  "main": "dist/index.server.js",
+  "browser": "dist/index.browser.js",
+  "typings": "universal-passthrough.d.ts",
   "contributors": [
     "PatrickJS <patrick@angularclass.com>",
-    "Shawn Stedman <sstedman@pxwise.com>"
+    "Shawn Stedman <sstedman@pxwise.com>",
+    "Diego Barahona <hi@diegobarahona.com>"
   ],
-  "license": "MIT",
-  "dependencies": {
-    "@angular/common": "~2.1.2",
-    "@angular/compiler": "~2.1.2",
-    "@angular/core": "~2.1.2",
-    "@angular/forms": "~2.1.2",
-    "@angular/http": "~2.1.2",
-    "@angular/platform-browser": "~2.1.2",
-    "@angular/platform-browser-dynamic": "~2.1.2",
-    "@angular/platform-server": "~2.1.2",
-    "rxjs": "5.0.0-beta.12",
-    "zone.js": "~0.6.26"
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "npm run clean && webpack"
   },
+  "license": "MIT",
   "devDependencies": {
-    "typescript": "^2.0.6",
-    "webpack": "2.1.0-beta.27",
-    "angular2-template-loader": "^0.6.0",
-    "awesome-typescript-loader": "^3.0.0-beta.17"
+    "@angular/animations": "4.0.0",
+    "@angular/common": "4.0.0",
+    "@angular/compiler": "4.0.0",
+    "@angular/core": "4.0.0",
+    "@angular/platform-browser": "4.0.0",
+    "@angular/platform-browser-dynamic": "4.0.0",
+    "@angular/platform-server": "4.0.0",
+    "angular2-template-loader": "0.6.2",
+    "awesome-typescript-loader": "3.1.2",
+    "rxjs": "5.2.0",
+    "ts-node": "^2.1.0",
+    "typescript": "2.2.1",
+    "zone.js": "0.8.5",
+    "webpack": "2.3.1",
+    "webpack-merge": "~0.16.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "^4.0.0"
   }
 }

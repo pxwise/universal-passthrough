@@ -1,92 +1,86 @@
 /**
  * UniversalPassthrough browser version - swap server element w/ browser element
  */
+import { Injectable } from '@angular/core';
 
-// Globals must be outside of factory scope or values are destroyed by router.
-let browserElements = {};
-let serverElements = {};
-
-/**
- * PassthroughRegistry class definition.
- */
+@Injectable()
 export class PassthroughRegistry {
-  public serverElements: any = {};
+  private static serverElements = new Map<string, HTMLElement>();
+  private static browserElements = new Map<string, HTMLElement>();
 
-  public isRegistered(id: string): boolean { return true }
-  public replaceElement(id: string, el: HTMLElement): HTMLElement|any { }
-  public complete(): void { }
-  public detach(id: string, el: HTMLElement): void { }
-  public reattach(id: string, el: HTMLElement): void { }
-  private isElement(): boolean { return false }
-}
+  /**
+   * Collenct the server elements
+   */
+  private static getServerElements(): Map<string, HTMLElement> {
+    let serverElements = new Map<string, HTMLElement>();
+    let serverElementsArr: HTMLElement[] = [].slice
+      .call(document.querySelectorAll('[universalpassthrough]'));
 
-/**
- * PassthroughRegistryFactory function.
- */
-export function PassthroughRegistryFactory() {
-  let isElement = (el: any): boolean => {
+    serverElementsArr.forEach(el => {
+      // has universalpassthrough attr and an id w/ suffix '-server'
+      if (el.id.match(/-server?/i)) {
+        let browserKey = el.id.replace('-server', '-browser');
+        serverElements.set(browserKey, el);
+      }
+    });
+
+    return serverElements;
+  }
+
+  /**
+   * Initialize the registry with the server elements
+   */
+  public static init(): void {
+    PassthroughRegistry.serverElements = PassthroughRegistry.getServerElements();
+  }
+
+  /**
+   * Check if the browser element is already registered
+   */
+  public isRegistered(id: string): boolean {
+    return PassthroughRegistry.browserElements.has(id);
+  }
+
+  /**
+   * Register the browser element
+   * Replace it with corresponding server element if found
+   */
+  public replaceElement(browserId: string, el: HTMLElement): void {
+    if (PassthroughRegistry.serverElements.has(browserId)) {
+      const serverEl = PassthroughRegistry.serverElements.get(browserId) as HTMLElement;
+
+      if (this.isElement(el) && this.isElement(el.parentNode) && this.isElement(serverEl)) {
+        window.requestAnimationFrame(() => {
+          const browserElement = serverEl.cloneNode(true) as HTMLElement;
+
+          (el.parentNode as HTMLElement).replaceChild(browserElement, el);
+          PassthroughRegistry.serverElements.delete(browserId);
+        });
+      }
+    }
+  }
+
+  /**
+   * Removes the element from DOM
+   */
+  public detach(id: string, el: HTMLElement): void {
+    const serverEl = PassthroughRegistry.serverElements.get(id) as Node;
+    el.removeChild(serverEl);
+  }
+
+  /**
+   * Adds the element to DOM
+   */
+  public reattach(id: string, el: HTMLElement): void {
+    let serverEl = PassthroughRegistry.serverElements.get(id) as Node;
+    el.appendChild(serverEl);
+  }
+
+  private isElement(el: any): el is HTMLElement {
     return (el != null)
       && (typeof el === 'object')
       && (el.nodeType === Node.ELEMENT_NODE)
       && (typeof el.style === 'object')
       && (typeof el.ownerDocument === 'object');
   }
-
-  return {
-    isRegistered: (id: string): boolean => Boolean(browserElements[id]),
-    // register browser element and replace with corresponding server element if
-    // found.
-    replaceElement: (browserId: string, el: HTMLElement): void => {
-      if (Object.keys(serverElements).indexOf(browserId) > -1) {
-        if (isElement(el) && isElement(el.parentNode) && isElement(serverElements[browserId])) {
-          window.requestAnimationFrame(() => {
-            el.parentNode.replaceChild(serverElements[browserId], el);
-            delete serverElements[browserId];
-          });
-        }
-      }
-    },
-    // register server elements, fetched as sync in client.ts before bootstrap.
-    complete(serverEls: any): void {
-      serverElements = serverEls;
-    },
-    replaceElements: (): void => {
-
-    },
-    detach: (id: string, el: HTMLElement): void => {
-      let serverEl = serverElements[id];
-      el.removeChild(serverEl);
-    },
-    reattach: (id: string, el: HTMLElement): void => {
-      let serverEl = serverElements[id];
-      el.appendChild(serverEl);
-    }
-  };
 }
-
-/**
- * passthrough functions to execute in client.ts.
- */
-export function passthrough() {
-  return {
-    getServerElements: (): any => {
-      let serverElements = {};
-      let serverElementsArr = [].slice.call(document.querySelectorAll('[universalpassthrough]'));
-
-      serverElementsArr.forEach((el) => {
-        // has universalpassthrough attr and an id w/ suffix '-server'
-        if (el.id.match(/-server?/i)) {
-          let browserKey = el.id.replace('-server', '-browser');
-          serverElements[browserKey] = el;
-        }
-      });
-
-      return serverElements;
-    },
-    complete: (moduleRef: any, serverEls: any): void => {
-      const passthroughRegistry = moduleRef.injector.get(PassthroughRegistry);
-      passthroughRegistry.complete(serverEls);
-    }
-  }
-}
-

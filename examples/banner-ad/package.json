@@ -5,9 +5,6 @@
   "main": "index.server",
   "typings": "index.server",
   "browser": "index.browser",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "contributors": [
     "PatrickJS <patrick@angularclass.com>",
     "Shawn Stedman <sstedman@pxwise.com>"

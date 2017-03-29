@@ -3,4 +3,4 @@ import { Directive } from '@angular/core';
 @Directive({
   selector: '[universalPassthrough]'
 })
-export class UniversalPassthrough {}
+export class UniversalPassthrough { }
