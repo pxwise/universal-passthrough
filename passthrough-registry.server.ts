@@ -2,43 +2,30 @@
  * UniversalPassthrough server version, no-op.
  */
 
-/**
- * PassthroughRegistry class definition.
- */
 export class PassthroughRegistry {
-  public serverElements: any = {};
+  /**
+   * Initialize the registry with the server elements
+   */
+  public static init(): void { }
 
-  public isRegistered(id: string): boolean { return true }
-  public replaceElement(id: string, el: HTMLElement): void { }
-  public complete(): void { }
+  /**
+   * Check if the browser element is already registered
+   */
+  public isRegistered(id: string): boolean { return true; }
+
+  /**
+   * Register the browser element
+   * Replace it with corresponding server element if found
+   */
+  public replaceElement(browserId: string, el: HTMLElement): void { }
+
+  /**
+   * Removes the element from DOM
+   */
   public detach(id: string, el: HTMLElement): void { }
+
+  /**
+   * Adds the element to DOM
+   */
   public reattach(id: string, el: HTMLElement): void { }
-  private isElement(): boolean { return false }
-}
-
-/**
- * PassthroughRegistryFactory function.
- */
-export function PassthroughRegistryFactory() {
-  let browserElements = {};
-  let serverElements = {};
-  let isElement = (): boolean => false;
-
-  return {
-    isRegistered: (id: string): boolean => true,
-    replaceElement: (id: string, el: HTMLElement): void => { },
-    complete(serverEls: any): void { },
-    detach: (id: string, el: HTMLElement): void => { },
-    reattach: (id: string, el: HTMLElement): void => { }
-  };
-}
-
-/**
- * passthrough functions to execute in client.ts.
- */
-export function passthrough() {
-  return {
-    getServerElements: (): any => { },
-    complete: (moduleRef: any, serverEls: any): void => { }
-  }
 }
